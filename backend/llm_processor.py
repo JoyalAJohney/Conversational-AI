@@ -38,7 +38,6 @@ class LLMProcessor:
         self.memory.chat_memory.add_user_message(text) # Add user message to memory
 
         start_time = time.time()
-
         response = self.conversation.invoke({"text": text})
         end_time = time.time()
 

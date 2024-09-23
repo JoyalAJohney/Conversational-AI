@@ -34,6 +34,8 @@ def elevenlabs_tts_stream(text: str):
     for chunk in audio_stream:
         yield chunk
 
+
+
 async def deepgram_tts_stream(text: str):
     DEEPGRAM_URL = f"https://api.deepgram.com/v1/speak?model={DEEPGRAM_MODEL_NAME}"
     # linear16&sample_rate=24000"
@@ -45,19 +47,11 @@ async def deepgram_tts_stream(text: str):
         "text": text
     }
 
-    audio_file_path = "output.mp3"
-
-    with open(audio_file_path, 'wb') as file_stream:
-        response = requests.post(DEEPGRAM_URL, headers=headers, json=payload, stream=True)
-        for chunk in response.iter_content(chunk_size=1024):
+    with requests.post(DEEPGRAM_URL, stream=True, headers=headers, json=payload) as r:
+        for chunk in r.iter_content(chunk_size=1024):
             if chunk:
-                file_stream.write(chunk)
                 yield chunk
 
-    # with requests.post(DEEPGRAM_URL, stream=True, headers=headers, json=payload) as r:
-    #     for chunk in r.iter_content(chunk_size=1024):
-    #         if chunk:
-    #             yield chunk
 
 
 async def stream_audio_to_websocket(websocket, text: str, tts_engine):
@@ -71,7 +65,7 @@ async def stream_audio_to_websocket(websocket, text: str, tts_engine):
             if first_chunk_time is None:
                 first_chunk_time = time.time()
                 ttfb = int((first_chunk_time - start_time) * 1000)
-                print(f"Time to first byte (TTFB): {ttfb}ms")
+                print(f"TTS: Time to first byte (TTFB): {ttfb}ms")
             
             await websocket.send_bytes(chunk)
 

@@ -70,7 +70,6 @@ function initializeWebSocket() {
 
 async function handleWebSocketMessage(event) {
     if (typeof event.data === 'string') {
-        console.log("Text from server:", event.data);
         document.getElementById('output').innerHTML += event.data + '<br>';
         
         if (event.data === "END_OF_AUDIO") {
@@ -80,7 +79,6 @@ async function handleWebSocketMessage(event) {
         }
     } else if (event.data instanceof Blob) {
         const arrayBuffer = await event.data.arrayBuffer();
-        console.log("Received audio chunk");
         audioChunks.push(arrayBuffer);
     }
 }

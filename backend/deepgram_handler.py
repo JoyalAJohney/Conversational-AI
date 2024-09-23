@@ -1,3 +1,4 @@
+import time
 from config import DEEPGRAM_API_KEY
 from deepgram import (
     DeepgramClient,
@@ -6,6 +7,7 @@ from deepgram import (
     LiveOptions
 )
 
+start_time = None
 
 
 def create_deepgram_client():
@@ -19,8 +21,11 @@ async def initialize_connection(client, on_transcript_callback):
     print('Listening...')
 
     transcript = ""
+
     async def on_message(self, result, **kwargs):
         nonlocal transcript
+        global start_time
+
         sentence = result.channel.alternatives[0].transcript
 
         if result.is_final:
@@ -28,6 +33,12 @@ async def initialize_connection(client, on_transcript_callback):
             if result.speech_final:
                 full_sentence = transcript.strip()
                 if len(full_sentence) > 0:
+
+                    # Logging End time for STT
+                    end_time = time.time()
+                    total_time = int((end_time - start_time) * 1000) if start_time else 0
+                    print(f"Total STT time: {total_time}ms")
+
                     await on_transcript_callback(transcript.strip())
                     transcript = ""
                     print("")
@@ -56,7 +67,9 @@ async def initialize_connection(client, on_transcript_callback):
 
 
 async def send_audio(connection, audio_data):
+    global start_time
     if connection:
+        start_time = time.time()
         await connection.send(audio_data)
 
 

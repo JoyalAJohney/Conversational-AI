@@ -1,11 +1,9 @@
 
-import asyncio
 from fastapi import WebSocket
 from llm_processor import LLMProcessor
 from starlette.websockets import WebSocketState
 from text_to_speech import stream_audio_to_websocket
 from deepgram_handler import create_deepgram_client, initialize_connection, send_audio, stop_connection
-
 
 
 
@@ -15,10 +13,9 @@ async def websocket_endpoint(websocket: WebSocket):
 
     
     async def on_transcript(transcript: str):
-        print(f"Transcript for LLM: {transcript}")
+        print(f"User: {transcript}")
         llm_response = await language_model_processor.generate_response(transcript)
         await websocket.send_text(f"Full LLM Response: {llm_response}")
-
         await stream_audio_to_websocket(websocket, llm_response, tts_engine="deepgram")
 
 
