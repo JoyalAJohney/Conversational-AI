@@ -109,11 +109,11 @@ function stopAudioPlayback() {
         currentAudioSource.disconnect();
         currentAudioSource = null;
     }
-    // if (audioContext) {
-    //     audioContext.close().then(() => {
-    //         audioContext = null;
-    //     });
-    // }
+    if (audioContext) {
+        audioContext.close().then(() => {
+            audioContext = null;
+        });
+    }
 }
 
 

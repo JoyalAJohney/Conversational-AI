@@ -16,7 +16,7 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"User: {transcript}")
         llm_response = await language_model_processor.generate_response(transcript)
         await websocket.send_text(f"Full LLM Response: {llm_response}")
-        await stream_audio_to_websocket(websocket, llm_response, tts_engine="deepgram")
+        await stream_audio_to_websocket(websocket, llm_response)
 
 
     deepgram_client = create_deepgram_client()
