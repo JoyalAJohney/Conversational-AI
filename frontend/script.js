@@ -5,6 +5,9 @@ let audioQueue = [];
 let isPlaying = false;
 let audioChunks = [];
 let isAudioComplete = false;
+let recognition;
+let currentAudioSource = null;  // To keep track of the currently playing audio
+
 
 function initializePlaybackAudioContext() {
     audioContext = new (window.AudioContext || window.webkitAudioContext)({
@@ -23,6 +26,22 @@ async function startRecording() {
             } 
         });
 
+        // Does speech recognition - to interrupt audio
+        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new window.SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = event => {
+            stopAudioPlayback()
+        }
+
+        recognition.onend = () => {
+            console.log("Speech recognition ended");
+        };
+        
+
         recorder = new RecordRTC(stream, {
             type: 'audio',
             mimeType: 'audio/webm',
@@ -40,6 +59,7 @@ async function startRecording() {
 
         initializeWebSocket();
         recorder.startRecording();
+        recognition.start()
 
         document.getElementById('startButton').disabled = true;
         document.getElementById('stopButton').disabled = false;
@@ -52,7 +72,8 @@ async function stopRecording() {
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.close(1000, "Client initiated closure");
     }
-    stopAudioPlayback()
+    stopAudioPlayback();
+    recognition.stop();
     document.getElementById('startButton').disabled = false;
     document.getElementById('stopButton').disabled = true;
 }
@@ -73,7 +94,6 @@ async function handleWebSocketMessage(event) {
         document.getElementById('output').innerHTML += event.data + '<br>';
         
         if (event.data === "END_OF_AUDIO") {
-            console.log("End of audio stream");
             isAudioComplete = true;
             await processCompleteAudio();
         }
@@ -84,21 +104,24 @@ async function handleWebSocketMessage(event) {
 }
 
 function stopAudioPlayback() {
-    if (audioContext) {
-        audioContext.close().then(() => {
-            audioContext = null;
-        });
+    if (currentAudioSource) {
+        currentAudioSource.stop();
+        currentAudioSource.disconnect();
+        currentAudioSource = null;
     }
+    // if (audioContext) {
+    //     audioContext.close().then(() => {
+    //         audioContext = null;
+    //     });
+    // }
 }
 
 
-// Test
 async function processCompleteAudio() {
     if (!isAudioComplete) return;
 
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 22050 });
-    }
+    stopAudioPlayback();  // Stop any currently playing audio
+    initializePlaybackAudioContext()
 
     // Concatenate all audio chunks
     const totalLength = audioChunks.reduce((acc, chunk) => acc + chunk.byteLength, 0);
@@ -112,7 +135,6 @@ async function processCompleteAudio() {
 
     try {
         const audioBuffer = await audioContext.decodeAudioData(completeAudioBuffer);
-        console.log("Complete AudioBuffer: ", audioBuffer);
         playAudio(audioBuffer);
     } catch (error) {
         console.error('Error decoding complete audio data:', error);
@@ -124,10 +146,21 @@ async function processCompleteAudio() {
 }
 
 function playAudio(audioBuffer) {
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioContext.destination);
-    source.start(0);
+    initializePlaybackAudioContext()
+    
+    if (currentAudioSource) {
+        currentAudioSource.stop();
+        currentAudioSource.disconnect();
+    }
+
+    currentAudioSource = audioContext.createBufferSource();
+    currentAudioSource.buffer = audioBuffer;
+    currentAudioSource.connect(audioContext.destination);
+    currentAudioSource.start(0);
+
+    currentAudioSource.onended = () => {
+        currentAudioSource = null;
+    };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
