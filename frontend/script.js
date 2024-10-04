@@ -120,7 +120,11 @@ async function stopRecording() {
 }
 
 function initializeWebSocket() {
-    socket = new WebSocket('ws://localhost:8000/ws');
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const wsUrl = `${protocol}//${host}/ws`;
+
+    socket = new WebSocket(wsUrl);
     socket.onopen = () => console.log('WebSocket connected');
     socket.onmessage = handleWebSocketMessage;
     socket.onerror = error => console.error('WebSocket error:', error);
