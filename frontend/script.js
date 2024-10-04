@@ -1,17 +1,43 @@
 let socket;
-let audioContext;  // For playback (22050 Hz)
+let audioContext;
 let sourceNode;
 let audioQueue = [];
 let isPlaying = false;
 let audioChunks = [];
 let isAudioComplete = false;
 let recognition;
-let currentAudioSource = null;  // To keep track of the currently playing audio
+let currentAudioSource = null;
+let recorder;
+let isRecording = false;
 
+let aiAnimation;
+const micButton = document.getElementById('mic-button');
+const statusText = document.getElementById('status-text');
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize AI voice Lottie animation
+    aiAnimation = lottie.loadAnimation({
+        container: document.getElementById('ai-animation-container'),
+        renderer: 'svg',
+        loop: true,
+        autoplay: false,
+        path: 'https://lottie.host/7dade4ef-7cf3-4fcb-b9d6-e80be2475409/qXJrrtTNBS.json'
+    });
+
+    micButton.addEventListener('click', toggleRecording);
+});
+
+function toggleRecording() {
+    if (isRecording) {
+        stopRecording();
+    } else {
+        startRecording();
+    }
+}
 
 function initializePlaybackAudioContext() {
     audioContext = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: 22050  // Increased to match typical audio sample rates
+        sampleRate: 22050
     });
 }
 
@@ -26,7 +52,6 @@ async function startRecording() {
             } 
         });
 
-        // Does speech recognition - to interrupt audio
         window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new window.SpeechRecognition();
         recognition.continuous = true;
@@ -34,13 +59,18 @@ async function startRecording() {
         recognition.lang = 'en-US';
 
         recognition.onresult = event => {
-            stopAudioPlayback()
-        }
+            const transcript = Array.from(event.results)
+                .map(result => result[0].transcript)
+                .join('');
+            if (transcript.trim().length > 0) {
+                updateStatusText("User is speaking");
+            }
+        };
 
         recognition.onend = () => {
             console.log("Speech recognition ended");
+            updateStatusText("");
         };
-        
 
         recorder = new RecordRTC(stream, {
             type: 'audio',
@@ -59,13 +89,18 @@ async function startRecording() {
 
         initializeWebSocket();
         recorder.startRecording();
-        recognition.start()
+        recognition.start();
 
-        document.getElementById('startButton').disabled = true;
-        document.getElementById('stopButton').disabled = false;
+        isRecording = true;
+        micButton.classList.add('recording');
     } catch (error) {
         console.error('Error starting recording:', error);
     }
+}
+
+function updateStatusText(text) {
+    statusText.textContent = text;
+    statusText.classList.toggle('visible', text !== "");
 }
 
 async function stopRecording() {
@@ -74,10 +109,10 @@ async function stopRecording() {
     }
     stopAudioPlayback();
     recognition.stop();
-    document.getElementById('startButton').disabled = false;
-    document.getElementById('stopButton').disabled = true;
+    isRecording = false;
+    micButton.classList.remove('recording');
+    updateStatusText("");
 }
-
 
 function initializeWebSocket() {
     socket = new WebSocket('ws://localhost:8000/ws');
@@ -86,13 +121,8 @@ function initializeWebSocket() {
     socket.onerror = error => console.error('WebSocket error:', error);
 }
 
-
-
-
 async function handleWebSocketMessage(event) {
     if (typeof event.data === 'string') {
-        document.getElementById('output').innerHTML += event.data + '<br>';
-        
         if (event.data === "END_OF_AUDIO") {
             isAudioComplete = true;
             await processCompleteAudio();
@@ -109,21 +139,16 @@ function stopAudioPlayback() {
         currentAudioSource.disconnect();
         currentAudioSource = null;
     }
-    // if (audioContext) {
-    //     audioContext.close().then(() => {
-    //         audioContext = null;
-    //     });
-    // }
+    aiAnimation.stop();
+    updateStatusText("");
 }
-
 
 async function processCompleteAudio() {
     if (!isAudioComplete) return;
 
-    stopAudioPlayback();  // Stop any currently playing audio
-    initializePlaybackAudioContext()
+    stopAudioPlayback();
+    initializePlaybackAudioContext();
 
-    // Concatenate all audio chunks
     const totalLength = audioChunks.reduce((acc, chunk) => acc + chunk.byteLength, 0);
     const completeAudioBuffer = new ArrayBuffer(totalLength);
     const uint8Array = new Uint8Array(completeAudioBuffer);
@@ -140,13 +165,12 @@ async function processCompleteAudio() {
         console.error('Error decoding complete audio data:', error);
     }
 
-    // Reset for next audio stream
     audioChunks = [];
     isAudioComplete = false;
 }
 
 function playAudio(audioBuffer) {
-    initializePlaybackAudioContext()
+    initializePlaybackAudioContext();
     
     if (currentAudioSource) {
         currentAudioSource.stop();
@@ -160,10 +184,11 @@ function playAudio(audioBuffer) {
 
     currentAudioSource.onended = () => {
         currentAudioSource = null;
+        aiAnimation.stop();
+        updateStatusText("");
     };
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('startButton').addEventListener('click', startRecording);
-    document.getElementById('stopButton').addEventListener('click', stopRecording);
-});
+    // Start the AI animation and update status text
+    aiAnimation.play();
+    updateStatusText("AI is speaking");
+}
