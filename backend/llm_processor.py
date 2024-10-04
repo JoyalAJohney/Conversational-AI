@@ -31,9 +31,6 @@ class LLMProcessor:
             memory=self.memory
         )
 
-        # TODO implement summarization to reduce conversation history size
-
-
     async def generate_response(self, text):
         self.memory.chat_memory.add_user_message(text) # Add user message to memory
 

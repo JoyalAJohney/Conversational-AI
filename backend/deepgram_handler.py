@@ -43,6 +43,7 @@ async def initialize_connection(client, on_transcript_callback):
                     transcript = ""
                     print("")
     
+    
     async def on_error(self, error, **kwargs):
         print(f"Error: {error}")
     
