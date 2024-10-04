@@ -13,7 +13,7 @@ from langchain.prompts import (
 
 class LLMProcessor:
     def __init__(self):
-        self.llm = ChatGroq(temperature=0, model="llama-3.2-1b-preview", api_key=GROQ_API_KEY)
+        self.llm = ChatGroq(temperature=0, model="mixtral-8x7b-32768", api_key=GROQ_API_KEY)
         self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
         with open("system_prompt.txt", "r") as file:
@@ -43,4 +43,4 @@ class LLMProcessor:
         elapsed_time = int((end_time - start_time) * 1000)
         print(f"LLM ({elapsed_time}ms): {response['text']}")
 
-        return response["text"]
+        return response["text"], elapsed_time

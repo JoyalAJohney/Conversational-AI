@@ -42,12 +42,14 @@ async def stream_audio_to_websocket(websocket, text: str):
             await websocket.send_bytes(chunk)
 
         await asyncio.sleep(0.1) # Add a small delay to ensure all audio chunks are sent
-        await websocket.send_text("END_OF_AUDIO")
 
         end_time = time.time()
         total_time = int((end_time - start_time) * 1000)
         print(f"Total TTS time: {total_time}ms")
 
+        return total_time
+
     except Exception as e:
         print(f"Error streaming audio to websocket: {e}")
+        return 0
         
