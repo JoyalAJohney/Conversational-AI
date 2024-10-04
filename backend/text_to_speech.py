@@ -1,8 +1,7 @@
 import asyncio
-import os
 import time
 import requests
-from config import DEEPGRAM_API_KEY
+from .config import DEEPGRAM_API_KEY
 
 
 # Deepgram Config

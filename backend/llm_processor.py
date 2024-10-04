@@ -1,7 +1,7 @@
 
 import time
 from langchain_groq import ChatGroq
-from config import GROQ_API_KEY
+from .config import GROQ_API_KEY
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import (

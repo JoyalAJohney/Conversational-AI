@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: api_server
+    env_file: .env
+    ports:
+      - "8000:8000"  
+    volumes:
+      - ./backend:/app/backend  
+      - ./frontend:/app/frontend

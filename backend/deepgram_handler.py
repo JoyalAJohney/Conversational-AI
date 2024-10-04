@@ -1,5 +1,5 @@
 import time
-from config import DEEPGRAM_API_KEY
+from .config import DEEPGRAM_API_KEY
 from deepgram import (
     DeepgramClient,
     DeepgramClientOptions,
