@@ -4,7 +4,9 @@ services:
   app:
     build: .
     container_name: api_server
-    env_file: .env
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
     ports:
       - "8000:8000"  
     volumes:

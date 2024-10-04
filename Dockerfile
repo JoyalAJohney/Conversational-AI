@@ -15,8 +15,6 @@ COPY ./frontend /app/frontend
 
 COPY system_prompt.txt /app/system_prompt.txt
 
-COPY .env /app/.env
-
 EXPOSE 8000
 
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
