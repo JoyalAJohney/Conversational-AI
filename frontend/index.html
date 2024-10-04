@@ -7,9 +7,28 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.14/lottie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/recordrtc@5.6.2/RecordRTC.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-title">
+                    <h1 class="title">Conversational AI</h1>
+                </div>
+                <p class="subtitle">Human like conversation with memory</p>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/JoyalAJohney/Conversational-AI" target="_blank" rel="noopener noreferrer" class="social-icon">
+                    <i class="fab fa-github"></i>    
+                    <span class="tooltip-text">The Creation</span>                
+                </a>
+                <a href="https://www.linkedin.com/in/joyalajohney/" target="_blank" rel="noopener noreferrer" class="social-icon">
+                    <i class="fab fa-linkedin"></i>
+                    <span class="tooltip-text">The Creator</span>
+                </a>
+            </div>
+        </header>
         <div id="ai-animation-container"></div>
         <div class="mic-container">
             <div id="mic-button">
@@ -19,6 +38,7 @@
                 </svg>
             </div>
             <p id="status-text" class="status-text"></p>
+            <div id="latency-display" class="latency-display"></div>
         </div>
     </div>
     <script src="script.js"></script>

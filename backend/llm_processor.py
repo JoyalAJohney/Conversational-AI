@@ -46,4 +46,4 @@ class LLMProcessor:
         elapsed_time = int((end_time - start_time) * 1000)
         print(f"LLM ({elapsed_time}ms): {response['text']}")
 
-        return response["text"]
+        return response["text"], elapsed_time

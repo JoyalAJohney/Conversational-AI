@@ -39,7 +39,7 @@ async def initialize_connection(client, on_transcript_callback):
                     total_time = int((end_time - start_time) * 1000) if start_time else 0
                     print(f"Total STT time: {total_time}ms")
 
-                    await on_transcript_callback(transcript.strip())
+                    await on_transcript_callback(transcript.strip(), total_time)
                     transcript = ""
                     print("")
     

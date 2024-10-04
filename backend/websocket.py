@@ -1,4 +1,5 @@
 
+import json
 from fastapi import WebSocket
 from llm_processor import LLMProcessor
 from starlette.websockets import WebSocketState
@@ -12,11 +13,19 @@ async def websocket_endpoint(websocket: WebSocket):
     language_model_processor = LLMProcessor()
 
     
-    async def on_transcript(transcript: str):
+    async def on_transcript(transcript: str, stt_latency: int):
         print(f"User: {transcript}")
-        llm_response = await language_model_processor.generate_response(transcript)
+        llm_response, llm_latency = await language_model_processor.generate_response(transcript)
         await websocket.send_text(f"Full LLM Response: {llm_response}")
-        await stream_audio_to_websocket(websocket, llm_response, tts_engine="deepgram")
+        tts_latency = await stream_audio_to_websocket(websocket, llm_response, tts_engine="deepgram")
+
+        latency_info = {
+            "stt_latency": stt_latency,
+            "llm_latency": llm_latency,
+            "tts_latency": tts_latency,
+            "total_latency": stt_latency + llm_latency + tts_latency
+        }
+        await websocket.send_text(f"END_OF_AUDIO {json.dumps(latency_info)}")
 
 
     deepgram_client = create_deepgram_client()

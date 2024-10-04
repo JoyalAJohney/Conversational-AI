@@ -13,6 +13,7 @@ let isRecording = false;
 let aiAnimation;
 const micButton = document.getElementById('mic-button');
 const statusText = document.getElementById('status-text');
+const latencyDisplay = document.getElementById('latency-display');
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize AI voice Lottie animation
@@ -64,6 +65,7 @@ async function startRecording() {
                 .join('');
             if (transcript.trim().length > 0) {
                 updateStatusText("User is speaking");
+                latencyDisplay.innerHTML = ""
             }
         };
 
@@ -93,6 +95,7 @@ async function startRecording() {
 
         isRecording = true;
         micButton.classList.add('recording');
+        micButton.classList.add('floating');
     } catch (error) {
         console.error('Error starting recording:', error);
     }
@@ -111,7 +114,9 @@ async function stopRecording() {
     recognition.stop();
     isRecording = false;
     micButton.classList.remove('recording');
+    micButton.classList.remove('floating');
     updateStatusText("");
+    latencyDisplay.innerHTML = "";
 }
 
 function initializeWebSocket() {
@@ -123,7 +128,9 @@ function initializeWebSocket() {
 
 async function handleWebSocketMessage(event) {
     if (typeof event.data === 'string') {
-        if (event.data === "END_OF_AUDIO") {
+        if (event.data.startsWith("END_OF_AUDIO")) {
+            const latencyInfo = JSON.parse(event.data.split("END_OF_AUDIO ")[1]);
+            displayLatency(latencyInfo);
             isAudioComplete = true;
             await processCompleteAudio();
         }
@@ -191,4 +198,25 @@ function playAudio(audioBuffer) {
     // Start the AI animation and update status text
     aiAnimation.play();
     updateStatusText("AI is speaking");
+}
+
+function startLatencyAnimation() {
+    let count = 0;
+    let direction = 1;
+    latencyAnimationInterval = setInterval(() => {
+        count += direction * Math.floor(Math.random() * 10);
+        if (count > 500) direction = -1;
+        if (count < 100) direction = 1;
+        latencyDisplay.innerHTML = `<div>Latency: ${count}ms</div>`;
+    }, 50);
+}
+
+function stopLatencyAnimation() {
+    clearInterval(latencyAnimationInterval);
+}
+
+function displayLatency(latencyInfo) {
+    // stopLatencyAnimation();
+    const { stt_latency, llm_latency, tts_latency,  total_latency } = latencyInfo;
+    latencyDisplay.innerHTML = `<div>STT: ${stt_latency}ms, LLM: ${llm_latency}ms, TTS: ${tts_latency}ms | Total: ${total_latency}ms</div>`;
 }
