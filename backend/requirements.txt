@@ -4,7 +4,7 @@ requests==2.28.2
 langchain==0.1.9
 langchain-core==0.1.26
 langchain-groq==0.0.1
-# deepgram-sdk==3.1.4
+python-dotenv==1.0.0
 deepgram-sdk==3.*
 websocket==0.2.1
 elevenlabs==1.9.0

@@ -1,10 +1,10 @@
 
 import json
 from fastapi import WebSocket
-from llm_processor import LLMProcessor
+from .llm_processor import LLMProcessor
 from starlette.websockets import WebSocketState
-from text_to_speech import stream_audio_to_websocket
-from deepgram_handler import create_deepgram_client, initialize_connection, send_audio, stop_connection
+from .text_to_speech import stream_audio_to_websocket
+from .deepgram_handler import create_deepgram_client, initialize_connection, send_audio, stop_connection
 
 
 
