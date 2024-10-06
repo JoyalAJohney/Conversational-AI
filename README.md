@@ -43,8 +43,3 @@ Go to http://localhost:8000 to see the magic!
 ## Demo
 
 https://github.com/user-attachments/assets/c66b978b-f03c-461a-b752-95529cd24c46
-
-
-
-https://drive.google.com/file/d/1d1bGOp1lTSJPZ80mdOG0g5DBFrHZTDOu/view?usp=sharing
-
