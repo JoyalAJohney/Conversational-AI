@@ -42,5 +42,5 @@ Go to http://localhost:8000 to see the magic!
 
 ## Demo
 
-![Demo Video](https://github.com/JoyalAJohney/Conversational-AI/blob/master/assets/finalCut.mp4)
+![Demo Video]([https://github.com/JoyalAJohney/Conversational-AI/blob/master/assets/finalCut.mp4](https://drive.google.com/file/d/1d1bGOp1lTSJPZ80mdOG0g5DBFrHZTDOu/view?usp=drive_link))
 
