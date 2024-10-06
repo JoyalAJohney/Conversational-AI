@@ -1,5 +1,5 @@
 
-# Eliza - Conversation AI
+# Eliza - Conversational AI
 
 A real-time voice AI enabling human-like conversations with memory and interruptions. This project integrates models for Speech-to-Text (STT), Groq-fast LLM, and Text-to-Speech (TTS), all communicating via WebSocket with ~1900ms latency.
 
@@ -41,6 +41,10 @@ Run docker container
 Go to http://localhost:8000 to see the magic!
 
 ## Demo
+
+https://github.com/user-attachments/assets/c66b978b-f03c-461a-b752-95529cd24c46
+
+
 
 https://drive.google.com/file/d/1d1bGOp1lTSJPZ80mdOG0g5DBFrHZTDOu/view?usp=sharing
 
