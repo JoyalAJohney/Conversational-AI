@@ -1,10 +1,13 @@
 
-# Eliza - Conversation AI ✨
+# Eliza - Conversation AI
 
-Low latency, Human like conversation with memory and interruptions!
+A real-time voice AI enabling human-like conversations with memory and interruptions. This project integrates models for Speech-to-Text (STT), Groq-fast LLM, and Text-to-Speech (TTS), all communicating via WebSocket with ~1900ms latency.
+
+If you find this helpful, consider giving it a ⭐!
 
 ![App Screenshot](https://raw.githubusercontent.com/JoyalAJohney/Conversational-AI/refs/heads/master/assets/eliza1.png)
 
+**Note:** This is an initial version. Future plans include integrating a low-latency Speech-to-Speech model from OpenAI.
 
 
 
@@ -36,3 +39,8 @@ Run docker container
 ```
 
 Go to http://localhost:8000 to see the magic!
+
+## Demo
+
+![Demo Video](https://github.com/JoyalAJohney/Conversational-AI/blob/master/assets/finalCut.mp4)
+
